@@ -1,0 +1,43 @@
+version: '3'
+
+networks:
+  price-comparator-net:
+    driver: bridge
+
+services:
+
+  price-provider-registry:
+    build: price-provider-registry
+    container_name: price-provider-registry
+    environment:
+      - server.port=8761
+      - eureka.instance.lease-renewal-interval-in-seconds=5
+    networks:
+      - price-comparator-net
+    ports:
+      - 8761:8761
+
+  price-provider:
+    build: price-provider/
+    environment:
+      - server.port=8081
+      - eureka.client.service-url.defaultZone=http://price-provider-registry:8761/eureka/
+      - eureka.instance.lease-renewal-interval-in-seconds=5
+    networks:
+      - price-comparator-net
+    depends_on:
+      - price-provider-registry
+
+  price-comparator-classic:
+    build: price-comparator-classic
+    container_name: price-comparator-classic
+    environment:
+      - server.port=8082
+      - eureka.client.service-url.defaultZone=http://price-provider-registry:8761/eureka/
+      - eureka.instance.lease-renewal-interval-in-seconds=5
+    networks:
+      - price-comparator-net
+    depends_on:
+      - price-provider
+    ports:
+      - 8082:8082

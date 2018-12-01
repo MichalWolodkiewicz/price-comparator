@@ -1,6 +1,8 @@
 package com.quipu.pricecomparator;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,12 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.MalformedURLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @org.springframework.web.bind.annotation.RestController
 class RestController {
+
+    private final static Logger logger = LoggerFactory.getLogger(RestController.class);
 
     private final DiscoveryClient discoveryClient;
     private final RestTemplate restTemplate;
@@ -34,12 +37,19 @@ class RestController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/api/services")
+    List<ServiceInstance> getServices() {
+        return discoveryClient.getInstances("price-provider");
+    }
+
     private String toExternalForm(ServiceInstance serviceInstance) {
+        String host = "";
         try {
-            return serviceInstance.getUri().toURL().toExternalForm();
+            host = serviceInstance.getUri().toURL().toExternalForm();
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            return "";
         }
+        logger.info("Host = {}", host);
+        return host;
     }
 }
