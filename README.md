@@ -3,3 +3,20 @@ Demo application presents performance difference between classic and reactive sp
 
 ### Application infrastructure
 ![Application infrastructure](res/infra.png)
+
+The following modules create the whole environment:
+ - price-provider-registry - service discovery server using netflix eureka implementation
+ - price-provider - eureka client with single rest endpoint that returns given product price
+ - price-comparator - uses all registered in eureka services to collect prices for a given product. Application is based on classic spring mvc.
+ - price-comparator - uses all registered in eureka services to collect prices for a given product. Application is based on new spring reactive support.
+
+### Run the application
+To start the applicaton type the following command:
+
+<code>docker-compose up --build</code>
+
+### Scale the number of price providers
+Using docker compose it is very easy to increase number of active price providers. For example
+to create 4 instances of price-provider in runtime, type the following command:
+
+<code>docker-compose scale price-provider=4</code>
