@@ -26,6 +26,7 @@
         <module>price-provider</module>
         <module>price-comparator-classic</module>
         <module>price-comparator-react</module>
+        <module>price-provider-registry</module>
     </modules>
 
     <dependencies>
