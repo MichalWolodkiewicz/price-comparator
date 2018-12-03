@@ -1,40 +1,36 @@
 package com.quipu.pricecomparator;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 
 import java.net.MalformedURLException;
-import java.util.List;
-import java.util.stream.Collectors;
 
-@org.springframework.web.bind.annotation.RestController
-class RestController {
-
-    private final static Logger logger = LoggerFactory.getLogger(RestController.class);
+@RestController
+class RestReactiveController {
 
     private final DiscoveryClient discoveryClient;
     private final RestTemplate restTemplate;
 
-    RestController(DiscoveryClient discoveryClient) {
+
+    RestReactiveController(DiscoveryClient discoveryClient) {
         this.discoveryClient = discoveryClient;
         this.restTemplate = new RestTemplate();
     }
 
     @GetMapping("/api/prices/product/{productName}")
-    List<PriceDetails> getPrices(@PathVariable("productName") String productName) {
-        return discoveryClient.getInstances("price-provider")
-                .stream()
+    Flux<PriceDetails> getPrices(@PathVariable("productName") String productName) {
+        return Flux.fromStream(discoveryClient.getInstances("price-provider").stream())
                 .map(this::toExternalForm)
                 .filter(StringUtils::isNotBlank)
-                .map((s) -> s.concat("/api/prices/").concat(productName))
-                .map((host) -> restTemplate.getForEntity(host, PriceDetails.class).getBody())
-                .collect(Collectors.toList());
+                .flatMap((s) -> WebClient.create(s.concat("/api/prices/").concat(productName)).get().retrieve().bodyToMono(PriceDetails.class))
+                .doOnError(System.out::println);
     }
 
     private String toExternalForm(ServiceInstance serviceInstance) {
@@ -44,7 +40,7 @@ class RestController {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        logger.info("Host = {}", host);
         return host;
     }
+
 }

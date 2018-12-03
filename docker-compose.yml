@@ -41,3 +41,17 @@ services:
       - price-provider
     ports:
       - 8082:8082
+
+  price-comparator-reactive:
+    build: price-comparator-react
+    container_name: price-comparator-reactive
+    environment:
+      - server.port=8083
+      - eureka.client.service-url.defaultZone=http://price-provider-registry:8761/eureka/
+      - eureka.instance.lease-renewal-interval-in-seconds=5
+    networks:
+      - price-comparator-net
+    depends_on:
+      - price-provider
+    ports:
+      - 8083:8083

@@ -1,5 +1,6 @@
 package com.quipu.priceprovider;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,8 @@ class ProductPriceRepository implements ApplicationRunner {
 
     private ConcurrentHashMap<String, PriceDetails> prices = new ConcurrentHashMap<>(10);
 
-    private static final String[] productNames = new String[]{"ferrari", "audi", "volvo", "ford", "toyota"};
+    @Value("${products}")
+    private String[] productNames;
 
     private static final String[] currencies = new String[]{"USD", "EUR", "PLN"};
 

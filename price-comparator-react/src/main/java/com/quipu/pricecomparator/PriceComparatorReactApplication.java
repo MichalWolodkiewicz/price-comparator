@@ -8,5 +8,6 @@ public class PriceComparatorReactApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(PriceComparatorReactApplication.class, args);
+
     }
 }

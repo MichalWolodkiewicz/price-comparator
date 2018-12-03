@@ -14,6 +14,11 @@ class RestController {
 
     @GetMapping("/api/prices/{productName}")
     PriceDetails getPriceDetails(@PathVariable("productName") String productName) {
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return productPriceRepository.getPriceDetails(productName);
     }
 }

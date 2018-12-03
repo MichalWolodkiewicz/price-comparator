@@ -20,3 +20,11 @@ Using docker compose it is very easy to increase number of active price provider
 to create 4 instances of price-provider in runtime, type the following command:
 
 <code>docker-compose scale price-provider=4</code>
+
+### Endpoints
+
+localhost:8081 - eureka monitoring panel
+localhost:8082/api/prices/product/{productName} - GET rest endpoint which returns all available prices. Uses spring classic mvc. 
+localhost:8083/api/prices/product/{productName} - GET rest endpoint which returns all available prices. Uses react spring approach.
+
+Product name are defined in price-provider/src/main/resources/application.properties file.
