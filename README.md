@@ -28,3 +28,27 @@ localhost:8082/api/prices/product/{productName} - GET rest endpoint which return
 localhost:8083/api/prices/product/{productName} - GET rest endpoint which returns all available prices. Uses react spring approach.
 
 Product name are defined in price-provider/src/main/resources/application.properties file.
+
+### Classic mvc vs spring reactive stack
+
+Given:
+
+4 instance of price-provider are registered in eureka.
+
+When:
+
+Both price-comparator-classic and price-comparator-react are asked for available prices for given product.
+
+
+The tests results are presented in the table:
+
+|Test number|classiv mvc response time(ms)|reactive stack response time(ms)|
+|-----------|-------------------------|----------------------------|
+|1|6446|1876|
+|2|6061|1521|
+|3|6067|1520|
+
+### Related materials
+1. https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html
+2. https://github.com/odrotbohm/reactive-4te
+3. https://www.youtube.com/watch?v=E3s5f-JF8z4
